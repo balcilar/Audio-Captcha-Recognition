@@ -49,7 +49,7 @@ class CaptchaAnalysis:
             Spec[i-2]=np.array(file[self.X[i]+'/spec'])
             Label[i-2]=file[self.X[i]+'/label'][0]
         file.close()
-        print (len(Ceps), ' number of data read from given dataset')
+        print len(Ceps), ' number of data read from given dataset'
         m,n=Ceps[0].shape
         self.Ftrain=np.zeros((len(Ceps),m*n))
         self.FtrLabel=np.zeros(len(Ceps))
@@ -59,7 +59,7 @@ class CaptchaAnalysis:
               self.FtrLabel[i]=Label[i]+1
 
 
-    
+    def crossval(self,cost=1,pcavar=0.95):
                 
         cres=0
         for k in range(0,4):
@@ -106,7 +106,63 @@ class CaptchaAnalysis:
 
         return cres/44
 
-    
+    def trainNB(self,matfile):
+        file = h5py.File(matfile, 'r')  
+        self.take_hdf5_item_structure(file)
+        Ceps={}
+        Spec={}
+        Label={}
+        for i in range(2,len(self.X)):
+            Ceps[i-2]=np.array(file[self.X[i]+'/ceps'])
+            Spec[i-2]=np.array(file[self.X[i]+'/spec'])
+            Label[i-2]=file[self.X[i]+'/label'][0]
+        file.close()
+        print len(Ceps), ' number of data read from given dataset'
+        m,n=Ceps[0].shape
+        train=np.zeros((len(Ceps),m*n))
+        trLabel=np.zeros(len(Ceps))
+
+        for i in range(0,len(Ceps)):
+              train[i,:]=Ceps[i].flatten()
+              trLabel[i]=Label[i]+1
+        
+
+        zstrain=stats.zscore(train)
+        
+        mn=train.mean(0)
+        vr=train.std(0)   
+        
+        train_pc=zstrain
+        
+        # train step
+        clf={}
+        results=np.zeros((11,2))
+        #trGroup=np.zeros(len(trLabel))                   
+        
+        clf = GaussianNB()
+
+           
+        clf.fit(train_pc, trLabel)
+        w=clf.predict(train_pc) 
+        for i in range(0,11):
+            results[i,0]=np.sum(w[trLabel==i+1]==i+1)
+            results[i,1]=np.sum(trLabel==i+1)
+        
+
+        filen=matfile[:-4]+"_NB"
+        pickle_out = open(filen,"wb")
+        pickle.dump(mn, pickle_out)        
+        pickle.dump(vr, pickle_out)
+        pickle.dump(clf, pickle_out)
+        pickle_out.close()
+
+        pickle_out2 = open("last_train_filename","wb")
+        pickle.dump(filen, pickle_out2)
+        pickle_out2.close()
+
+        return results
+
+
     def train(self,matfile,cost=1,pcavar=0.95):
         file = h5py.File(matfile, 'r')  
         self.take_hdf5_item_structure(file)
@@ -118,7 +174,7 @@ class CaptchaAnalysis:
             Spec[i-2]=np.array(file[self.X[i]+'/spec'])
             Label[i-2]=file[self.X[i]+'/label'][0]
         file.close()
-        print (len(Ceps), ' number of data read from given dataset')
+        print len(Ceps), ' number of data read from given dataset'
         m,n=Ceps[0].shape
         train=np.zeros((len(Ceps),m*n))
         trLabel=np.zeros(len(Ceps))
@@ -255,6 +311,81 @@ class CaptchaAnalysis:
             if digit_count==digit_number:
                 break
         return result            
+           
+    def testNB(self,testfile):
+
+        digit_number = len(testfile)-4;        
+
+        fs, ff = scipy.io.wavfile.read(testfile)
+        length = len(ff);
+        f = ff[0 : int(np.floor(length/2))]/32768.0;
+        energy_f = np.abs(f)*f*f
+        y=self.running_mean(energy_f, 100)
+        mean_locs = (y>0.0003)
+        zero_locs = (y<0.00001)
+        flag = 0;
+
+        location = {}; # np.zeros(1000)#
+        cnt=0
+
+        for i in range(0,len(y)):
+            if (flag==0 and mean_locs[i]==1):
+                location[cnt] = i
+                cnt+=1
+                flag = 1;
+            elif (flag==1 and mean_locs[i]==0):
+                location[cnt] = i-1
+                cnt+=1
+                flag = 0
+        index = -1
+        startpoint = 0
+        endpoint = 0
+        segment={}
+        ceps={}
+        spec={}
+        svmLabel={}
+        digit_count=0
+        result=""
+        for i in range(1,1+int(np.floor(len(location)/2))):
+            if location[2*i-1]-location[2*i-2]>200:
+                for j in range(int(location[2*i-2]),-1,-1 ):
+                    if zero_locs[j]==1:
+                        startpoint = j
+                        break   
+                if startpoint< np.floor((location[2*i-2]+location[2*i-1])/2)-1750:
+                    startpoint =int(np.floor((location[2*i-2]+location[2*i-1])/2)-1750)
+                
+
+                if (startpoint > endpoint and startpoint +3500 < len(f)):
+                    index = index+1
+                    segment[index] = f[startpoint : startpoint+3501]
+                    ceps[index], spec[index], p_spectrum, lpc_anal, F, M = rastaplp(segment[index], fs,0, 12)        
+                    endpoint = startpoint                   
+
+                    m,n=ceps[index].shape
+          
+                    testd=np.zeros((1,m*n))        
+                    testd[0,:]=ceps[index].flatten()
+
+                    test_pc=(testd-self.pca)/ self.el[np.newaxis,:]
+
+                                    
+
+                    svmLabel[index]=self.clf.predict(test_pc)                    
+                                       
+                    #svmLabel[index]=np.argmax(Score)
+
+                    if svmLabel[index]>=1 and svmLabel[index]<=10:
+                        endpoint=startpoint+3500
+                        digit_count+=1
+                        result+=str(int(svmLabel[index][0])-1)
+                        #result+=str(int(svmLabel[index]))
+                    else:
+                        endpoint=startpoint                       
+
+            if digit_count==digit_number:
+                break
+        return result           
            
     
 if __name__ == "__main__":    
