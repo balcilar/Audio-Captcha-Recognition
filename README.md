@@ -11,6 +11,19 @@ In this research, we used RASTA-PLP features and SVM classifier to recognize aud
 
 ## Analysis and Algorithm Techniques
 
+### Data Exploration: 
+We provide features from the audio CAPTCHA and use SVM classifier to perform automatic speech recognition on segments of the sample files to elapse the audio CAPTCHAs. There exist several well-known methods for extracting specifications from audio files. The technique that we used here is relative spectral transform-perceptual linear prediction (RASTA-PLP). By using RASTA-PLP, we could be able to train our classifiers to identify words and digits all by itself of who pronounce them.
 
+We can see in Figure 1, a sample audio file is displayed in the time domain and in the frequency domain. In the time domain, the labels of the digits are also shown. 
+
+![Sample image](figures/spect.jpg?raw=true "Title")
+
+
+
+
+In Figure 2, 04648 is pronounced
+in the sample file. As you can see, many non-numeric regions resemble those in the time domain
+and the frequency domain. There may be periodic and random noisy background speeches that make
+automatic identification difficult in non-digitized places.
 
 
