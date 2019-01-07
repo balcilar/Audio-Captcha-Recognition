@@ -66,7 +66,16 @@ Before we extract the features of a test element, the data pre-processing determ
 The 4-fold cross validation was applied to the train set to determine the best value of the penalty parameter that the SVM algorithm would need with the variance variable used by the PCA algorithm. According to our algorithm, the entire train set is divided into 4 parts randomly, one part is tested and the remaining 3 parts are accepted as train. The system is trained with the given parameters, then the digit performance for the set determined. In this study, we used 11 different penalty parameters of 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, and 7 different penalty values of 0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99 where for each penalty value we used the
 value of the variance representation. As a result, 4-fold validation was performed separately for 77 different parameters and the validation success was calculated for each case. The following table shows that the calculated validation accuracies for the varying penalty parameter and PCA variance. As you can see from there, the highest validation success was calculated for Penalty Parameter = 50, PCA-Var = 0.9.
 
-![Sample image](figures/crossval.jpg.jpg?raw=true "Title")
+![Sample image](figures/crossval.jpg?raw=true "Title")
+
+
+## Conclusion
+
+The Na¨ıve Bayes method correctly identifies about 42% of the test digits. This method also failed because every class element in the train set is not balanced because the train set has a large number of noise class (11th class) elements, while the elements from 0 to 9 are somewhat less. None of the 100 audio files in the test set were fully recognized by Na¨ıve Bayes method. Since the number of elements is not balanced, even though the classes from 0 to 9 a are partially recognized even in the train set, the noise class has a relatively low success rate of 71%. This is why all test audio files are not recognized without error, yet even if a section is wrongly assigned to the noise class, it means that the test element is misclassified.
+
+On the other hand, when the default number of SVM elements is unstable, it has succeeded in achieving 92% independent digits, but only 44% of the test elements have been achieved. With the parameter we have optimized, the recognition of the complex chaptche sound file has reached 89%. Independent digit success has reached a very good value of 98%. We applied 3 different algorithms naive bayes (no PCA), default SVM (no PCA) and SVM (with PCA) to optimize the parameters as promised. The naive bayes method failed because each class element in the train set was not balanced. Because there are a large number of noise classes in the train cluster, the elements from 0 to 9 are somewhat less. None of the 100 audio files in the test set were fully recognized by Na¨ıve Bayes. Once we compare the results of our algorithm for each case we found the following distribution in following table.
+
+![Sample image](figures/results.jpg?raw=true "Title")
 
 
 
