@@ -47,14 +47,26 @@ digit regions with some hard thresholding operation. For this, the smoothed ener
 ### Implementation & Refinement  
 We tested the accuracy of audio CAPTCHAs used by popular machine learning techniques algorithmically planned to break them. Two different measurements were used for the accuracy of the classification. First, we considered the digits independently to obtain accurate digit prediction. Secondly, we measured the prediction accuracy of the digits where they are usually varying between 4 and 6 for the test files. We operated DTW algorithm to perform the difference between the ground truth and predicted digits.
 For feature extraction we use RASTA-PLP speech analysis by applying the following steps:
-• Calculate the crucial-band spectrum (as in the PLP) and take its log.
-• Approximate the temporal derivative of log crucial-band spectrum using 4 consecutive spectral
+  * Calculate the crucial-band spectrum (as in the PLP) and take its log.
+  * Approximate the temporal derivative of log crucial-band spectrum using 4 consecutive spectral
 values.
-• Apply SVM as nonlinear classifier for threshold filtering.
-• Integrate log crucial-band temporal derivative.
-• According to ordinary PLP, add equal noise and multiply by 0.33 to create the power law of
+  * Apply SVM as nonlinear classifier for threshold filtering.
+  * Integrate log crucial-band temporal derivative.
+  * According to ordinary PLP, add equal noise and multiply by 0.33 to create the power law of
 hearing
-• Operate exponential function of this log spectrum to produce audio spectrum.
+  * Operate exponential function of this log spectrum to produce audio spectrum.
+  
+To reduce the dimensionality, we used PCA since redundancy were growing as the dimension of the data increased. PCA is one of the most common method to utilize dimensions by transforming them to a new space. We applied k-fold cross validation (in this case k = 4) to decide the dimension for the usage of the classifier and found the optimum penalty parameter C for the SVM algorithm. The variance parameter used by the PCA algorithm and the k-fold cross validation of the train set were used to determine the best value of the penalty parameter that the SVM algorithm would need. When subtracting the features of the train set, a signal of 0.4 seconds is taken from each digit, plus the manually set start point for the non-digits of the eleventh set. It is assumed here that each digit is read and finished in 0.4 seconds, which is quite sufficient. This signal is divided into 42 sliding subwindows that overlap 50% and 13  random-plp coefficients of each sub-window are calculated. Then these coefficients are combined for 42 sub windows to obtain 42 × 13 = 546 feature vectors. Now an audio domain, labeled as one of 11 classes, is now expressed in 546 numbers, so its features have been
+extracted.
+
+Before we extract the features of a test element, the data pre-processing determines the potential start point of the audio block. Then, from each starting point, another 0.4 second segment is taken and divided into 42 sliding windows overlapping 50% in the same way as train data. 13 random-plp coefficients of each sub-window are calculated. Then, these coefficients are combined for 42 subwindows to obtain 42 × 13 = 546 feature vectors. We now have a 546-length feature vector of this potential phoneme. This 546-length vector is classed according to the method to be applied and is determined to be one of 11th class according to the output of the method. Refinement executed by conducting cross validation so as to determine the most optimum values of PCA variance and C-value.
+
+### Model Evaluation & Validation 
+
+The 4-fold cross validation was applied to the train set to determine the best value of the penalty parameter that the SVM algorithm would need with the variance variable used by the PCA algorithm. According to our algorithm, the entire train set is divided into 4 parts randomly, one part is tested and the remaining 3 parts are accepted as train. The system is trained with the given parameters, then the digit performance for the set determined. In this study, we used 11 different penalty parameters of 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, and 7 different penalty values of 0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99 where for each penalty value we used the
+value of the variance representation. As a result, 4-fold validation was performed separately for 77 different parameters and the validation success was calculated for each case. The following table shows that the calculated validation accuracies for the varying penalty parameter and PCA variance. As you can see from there, the highest validation success was calculated for Penalty Parameter = 50, PCA-Var = 0.9.
+
+![Sample image](figures/crossval.jpg.jpg?raw=true "Title")
 
 
 
