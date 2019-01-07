@@ -18,12 +18,31 @@ We can see in Figure 1, a sample audio file is displayed in the time domain and 
 
 ![Sample image](figures/spect.jpg?raw=true "Title")
 
+In Figure 2, 04648 is pronounced in the sample file. As you can see, many non-numeric regions resemble those in the time domain
+and the frequency domain. There may be periodic and random noisy background speeches that make automatic identification difficult in non-digitized places.
+
+![Sample image](figures/timedomain.jpg?raw=true "Title")
+![Sample image](figures/closelook.jpg.jpg?raw=true "Title")
+
+
+### Algorithms and Techniques 
+The Matlab functions for extracting features were published and distributed worldwide at and as part of the Voicebox package. We utilize SVM algorithms to carry out automatic digit recognition. We will explain our performance in detail. The benefits of using SVM library on Python Scikit-learn is that they allow the immediate training of high amount of linear classifiers. Another advantage of SVMs is that they can be kernelled to solve non-linear classification tasks conveniently. The main idea of kernel method to handle linearly 
+inseparable data is to build non-linear combinations of the basic features to project them on to a higher dimensional space via mapping a function ϕ that will be linearly separable. To solve SVM problems, we need to transform our training set on to a higher dimensional feature space using the function ϕ and train a linear SVM model to classify the data in our new feature space. Therefore, we may use that same ϕ to transform the unknown data to classify it by linear SVM model.
+
+For our problem, we divide the files of the training set into 11 separate classes as 0, 1, 2, ... , 9 and the noise class. We mentioned in Section 3 how many data points we have from each class. Then we extracted the features of these audio signals by using RASTA-PLP. As a feature of RASTA-PLP we obtained 13×42 dimensional feature space. In this number of dimension, 13 is the number of RASTAPLP coefficients and 42 is the number of sliding windows that is, every digit have been scanned by 42 sliding windows, and then 13 coefficients have been calculated from each sliding window. Once we calculated the RASTA-PLP coefficients of the digits where they belong to the generated 11 classes, we apply PCA to reduce dimensionality, and then we made a classification using multiclass SVMs.
+
+Henceforth, an existing test audio file has been fragmentized into sliding windows as we did for the training files before. Then, it has been extracted 546 RASTA-PLP features for each sliding window and we used PCA to reduce the dimensionality and SVM to classify these reduced number of features. If the output of the classification results a digit from 0 to 9, then we assigned it as an element of the
+digit class. Otherwise, if the output results a noise or an awkward silence, then we assigned it as an element of the so-called 11th class.
+
+### Benchmark Model 
+
+Without using PCA, we consider naive bayes method and SVM as benchmark models to compare our proposed model. Naive Bayes methods are a set of supervised learning algorithms based on applying Bayes’ theorem with the naive assumption of independence between every pair of features. These classifiers have worked well in many problems, such as text classification and spam filtering. They do not require a large amount of training data to estimate the involved parameters. Naive bayes method can be faster than SVMs when you compare them. On the other hand, although they are know as a smooth classifiers we can not say they are good estimator. Thus, we applied PCA to our SVM algorithm.
 
 
 
-In Figure 2, 04648 is pronounced
-in the sample file. As you can see, many non-numeric regions resemble those in the time domain
-and the frequency domain. There may be periodic and random noisy background speeches that make
-automatic identification difficult in non-digitized places.
+
+
+
+
 
 
