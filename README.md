@@ -83,11 +83,15 @@ On the other hand, when the default number of SVM elements is unstable, it has s
 After clone our repository, extract already extracted feature matrix named train_features.zip file. After extraction you can find train_features.mat file which consist of thousand of audio's rasta-plp features. Then you can train the model by given penalty parameter and PCA variance such as;
 
 ```
-$ python source/captcha_train.py dataset/train/train_features.mat 50 0.9
-
+$ python src/captcha_train.py dataset/train/train_features.mat 50 0.9
 ```
 
-within that command you can find trained model named "train_features_50.0_0.9" in the current folder. 
+within that command you can find trained model named "train_features_50.0_0.9" in the current folder. After you can test model by all provided test audio files by following command
+
+```
+$ python src/captcha_test.py  dataset/train/train_features_50.0_0.9  --all
+```
+
 
 
 
