@@ -22,7 +22,6 @@ In Figure 2, 04648 is pronounced in the sample file. As you can see, many non-nu
 and the frequency domain. There may be periodic and random noisy background speeches that make automatic identification difficult in non-digitized places.
 
 ![Sample image](figures/timedomain.jpg?raw=true "Title")
-![Sample image](figures/closelook.jpg.jpg?raw=true "Title")
 
 
 ### Algorithms and Techniques 
@@ -37,6 +36,27 @@ digit class. Otherwise, if the output results a noise or an awkward silence, the
 ### Benchmark Model 
 
 Without using PCA, we consider naive bayes method and SVM as benchmark models to compare our proposed model. Naive Bayes methods are a set of supervised learning algorithms based on applying Bayes’ theorem with the naive assumption of independence between every pair of features. These classifiers have worked well in many problems, such as text classification and spam filtering. They do not require a large amount of training data to estimate the involved parameters. Naive bayes method can be faster than SVMs when you compare them. On the other hand, although they are know as a smooth classifiers we can not say they are good estimator. Thus, we applied PCA to our SVM algorithm.
+
+## The Methodology of our Model
+
+### Data Preprocessing 
+
+In the proposed algorithm, preprocessing is used to determine the phonemes that are likely to be digitized. Therefore, there is no need for a preprocessing step in the train set, since the starting points for each digit set plus the non-digit set of 11th are manually set. When extracting the features of the test set, it is necessary to automatically determine the regions that are likely to be digitized. Because now nobody has the possibility to run these zones manually. We implemented a pre-processing algorithm for this. During this preprocessing phase, the test audio signal is read, 0 is averaged, the signal’s energy is calculated, and then the 100-point mean running average of the energy signal is calculated. The smoothed energy sequence is then run to determine the start of the potential
+digit regions with some hard thresholding operation. For this, the smoothed energy sequence is called cluster 1 for large parts from 0 to some degree (larger than 0.00001), and cluster 2 for parts smaller than 0.001. Then all the start-end point pairs are calculated for the potential digit blanks that start with the element of cluster 1 and end with the element of cluster 2.
+
+### Implementation & Refinement  
+We tested the accuracy of audio CAPTCHAs used by popular machine learning techniques algorithmically planned to break them. Two different measurements were used for the accuracy of the classification. First, we considered the digits independently to obtain accurate digit prediction. Secondly, we measured the prediction accuracy of the digits where they are usually varying between 4 and 6 for the test files. We operated DTW algorithm to perform the difference between the ground truth and predicted digits.
+For feature extraction we use RASTA-PLP speech analysis by applying the following steps:
+• Calculate the crucial-band spectrum (as in the PLP) and take its log.
+• Approximate the temporal derivative of log crucial-band spectrum using 4 consecutive spectral
+values.
+• Apply SVM as nonlinear classifier for threshold filtering.
+• Integrate log crucial-band temporal derivative.
+• According to ordinary PLP, add equal noise and multiply by 0.33 to create the power law of
+hearing
+• Operate exponential function of this log spectrum to produce audio spectrum.
+
+
 
 
 
