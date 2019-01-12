@@ -99,19 +99,10 @@ If you use this code or the publicly shared model, please cite the following pap
 Ahmet Faruk Çakmak and Muhammet Balcilar, "Audio Captcha Recognition Using RastaPLP Features by SVM", 2019. (arXiv)
 https://arxiv.org/abs/1901.02153
 ```
-@ARTICLE{2019arXiv190102153C,
-       author = {{Cakmak}, Ahmet Faruk and {Balcilar}, Muhammet},
-        title = "{Audio Captcha Recognition Using RastaPLP Features by SVM}",
-      journal = {arXiv e-prints},
-     keywords = {Computer Science - Machine Learning, Computer Science - Sound, Electrical Engineering and Systems Science - Audio and Speech Processing, Statistics - Machine Learning},
-         year = 2019,
-        month = Jan,
-          eid = {arXiv:1901.02153},
-        pages = {arXiv:1901.02153},
-archivePrefix = {arXiv},
-       eprint = {1901.02153},
- primaryClass = {cs.LG},
-       adsurl = {https://ui.adsabs.harvard.edu/\#abs/2019arXiv190102153C},
-      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+@article{cakmak2019audio,
+  title={Audio Captcha Recognition Using RastaPLP Features by SVM},
+  author={Cakmak, Ahmet Faruk and Balcilar, Muhammet},
+  journal={arXiv preprint arXiv:1901.02153},
+  year={2019}
 }
 ```
