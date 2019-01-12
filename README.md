@@ -96,7 +96,7 @@ $ python src/captcha_test.py  dataset/train/train_features_50.0_0.9  --all
 
 If you use this code or the publicly shared model, please cite the following paper.
 
-Ahmet Faruk Çakmak and Muhammet Balcilar, "Audio Captcha Recognition Using RastaPLP Features by SVM", 2019. (arXiv)
+Cakmak, Ahmet Faruk, and Muhammet Balcilar. "Audio Captcha Recognition Using RastaPLP Features by SVM." arXiv preprint arXiv:1901.02153 (2019).
 https://arxiv.org/abs/1901.02153
 ```
 @article{cakmak2019audio,
